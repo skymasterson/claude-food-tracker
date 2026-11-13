@@ -3,12 +3,13 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { exportBackup, restoreBackup } from '../db/backup';
 import { getRange, setSetting } from '../db/repo';
 import { dailyCsv, dailyRows, itemsCsv } from '../domain/csv';
-import { addDays, dayKey, parseDay, rangeDays } from '../domain/dates';
+import { addDays, dayKey, fmtTime, parseDay, rangeDays } from '../domain/dates';
 import { fmtTarget, fmtTotal } from '../domain/format';
+import { sumAll } from '../domain/nutrients';
 import { isOver } from '../domain/targets';
 import { NUTRIENTS, NUTRIENT_META } from '../domain/types';
 import { useSettings } from '../store';
-import { download } from '../util';
+import { cap, download } from '../util';
 
 export function Export() {
   const settings = useSettings();
@@ -17,6 +18,7 @@ export function Export() {
   const [to, setTo] = useState(today);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [withMeals, setWithMeals] = useState(true);
   const fileRef = useRef<HTMLInputElement>(null);
   const data = useLiveQuery(() => getRange(from, to), [from, to]);
 
@@ -64,7 +66,12 @@ export function Export() {
           <button className="btn" disabled={!rows.length} onClick={() => download(`food-log-daily-${from}-to-${to}.csv`, dailyCsv(rows), 'text/csv')}>
             Download CSV (daily totals)
           </button>
+          <label className="check">
+            <input type="checkbox" checked={withMeals} onChange={(e) => setWithMeals(e.target.checked)} />
+            Include each meal with its photo in the printed summary
+          </label>
           <button className="btn" disabled={!rows.length} onClick={() => window.print()}>Print daily summary for care team</button>
+          <p className="muted small">To send it as a file, choose “Save as PDF” as the printer.</p>
         </section>
 
         <section className="card">
@@ -109,6 +116,32 @@ export function Export() {
           FoodData Central data, AI estimates and hand-entered figures; portions are estimated by eye. Sodium and phosphorus in restaurant
           meals are likely underestimated. This is a self-kept log, not a clinical measurement.
         </p>
+
+        {withMeals && rows.length > 0 && (
+          <div className="meal-log" data-testid="meal-log">
+            <h2>Meals</h2>
+            {rows.map((r) => (
+              <section key={r.day} className="meal-day">
+                <h3>{long(r.day)}</h3>
+                {data.entries.filter((e) => e.day === r.day).map((e) => {
+                  const mine = data.items.filter((i) => i.entryId === e.id);
+                  const t = sumAll(mine);
+                  return (
+                    <div className="meal" key={e.id}>
+                      {e.thumbnail && <img src={e.thumbnail} alt={`Photo of ${e.title}`} />}
+                      <div className="meal-text">
+                        <strong>{fmtTime(e.time)} · {cap(e.mealType)}{e.isRestaurant ? ' · restaurant' : ''}{e.thumbnail ? '' : ' · no photo'}</strong>
+                        <span>{mine.map((i) => `${i.name} (${i.grams} g)`).join(', ') || e.title}</span>
+                        {e.note && <span className="meal-note">Note: {e.note}</span>}
+                        <span className="small">{NUTRIENTS.map((k) => `${NUTRIENT_META[k].label} ${fmtTotal(t[k], k)}`).join(' · ')}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </section>
+            ))}
+          </div>
+        )}
       </section>
     </>
   );

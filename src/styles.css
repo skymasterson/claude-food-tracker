@@ -172,6 +172,14 @@ details summary { min-height: 44px; display: flex; align-items: center; cursor: 
 .cell-over { font-weight: 700; color: var(--over); }
 .print-area { display: flex; flex-direction: column; gap: 8px; }
 
+.meal-log { display: flex; flex-direction: column; gap: 10px; }
+.meal-log h3 { font-size: 0.95rem; margin: 6px 0 0; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+.meal-day { display: flex; flex-direction: column; gap: 10px; }
+.meal { display: flex; gap: 12px; align-items: flex-start; break-inside: avoid; page-break-inside: avoid; }
+.meal img { width: 104px; height: 104px; flex: none; object-fit: cover; border-radius: 10px; background: var(--track); }
+.meal-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; font-size: 0.9rem; }
+.meal-note { font-style: italic; }
+
 /* Bottom tabs */
 .tabs { position: fixed; left: 0; right: 0; bottom: 0; display: flex; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); z-index: 5; }
 .tabs a { flex: 1; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 0.75rem; font-weight: 600; color: var(--muted); text-decoration: none; }
@@ -189,4 +197,6 @@ details summary { min-height: 44px; display: flex; align-items: center; cursor: 
   main { max-width: none; padding: 0; }
   .table-scroll { overflow: visible; }
   .table { font-size: 10pt; }
+  .meal img { width: 1.5in; height: 1.5in; border-radius: 4px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .meal-log h3 { break-after: avoid; }
 }

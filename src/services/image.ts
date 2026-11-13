@@ -20,9 +20,9 @@ export function resizeForAnalysis(file: Blob) {
   return draw(file, 1280, 0.82);
 }
 
-/** Small thumbnail stored with the entry. */
+/** Thumbnail stored with the entry: small enough to keep backups light, large enough to print in the care-team summary. */
 export async function makeThumbnail(file: Blob): Promise<string> {
-  return (await draw(file, 160, 0.7)).dataUrl;
+  return (await draw(file, 320, 0.72)).dataUrl;
 }
 
 export function base64Of(dataUrl: string): string {

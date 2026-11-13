@@ -138,7 +138,8 @@ legend { font-weight: 700; padding: 0 6px 0 0; }
 .ncell-val { font-weight: 700; font-variant-numeric: tabular-nums; font-size: 0.9rem; white-space: nowrap; }
 .ncell-name small { font-weight: 400; }
 .ncell-src { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
-.src-usda { background: var(--usda-bg); }
+.src-usda, .src-usda-survey { background: var(--usda-bg); }
+.src-usda-survey { border: 1.5px solid var(--primary); }
 .src-user-entered { background: var(--user-bg); }
 .src-ai-estimate { background: var(--ai-bg); border: 1.5px dashed var(--approach); }
 .src-ai-estimate .ncell-val { font-style: italic; }

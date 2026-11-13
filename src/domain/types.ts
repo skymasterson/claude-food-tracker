@@ -12,7 +12,11 @@ export const NUTRIENT_META: Record<NutrientKey, { label: string; short: string; 
   phosphorus: { label: 'Phosphorus', short: 'Phos', unit: 'mg' },
 };
 
-export type Source = 'usda' | 'ai-estimate' | 'user-entered';
+/**
+ * usda: a specific food in USDA's Foundation / SR Legacy data.
+ * usda-survey: USDA's survey database (FNDDS) — a national-average recipe for a dish as typically eaten.
+ */
+export type Source = 'usda' | 'usda-survey' | 'ai-estimate' | 'user-entered';
 
 /** value === null means UNKNOWN. It is never treated as zero. */
 export interface NutrientValue {

@@ -51,11 +51,11 @@ const SCHEMA = {
 
 const SYSTEM = `You identify the foods in a meal for a nutrition log used by someone managing a chronic health condition who must limit protein, potassium, sodium and phosphorus. Accuracy and honesty matter more than completeness.
 
-Break the meal into its distinct components (for example: rice, grilled chicken, stir-fried vegetables, sauce), including cooking oil, sauces, dressings and drinks when they are visible or clearly implied. For a mixed dish that cannot be separated sensibly, return it as one item.
+Break the meal into its distinct components when they sit separately on the plate (for example: rice, grilled chicken, steamed vegetables, sauce), including cooking oil, sauces, dressings and drinks when they are visible or clearly implied. For a combined dish whose ingredients are cooked or mixed together (pad thai, burrito, curry, soup, casserole, sandwich, pizza, salad with toppings), return the dish as ONE item: the nutrient database has entries for typical dishes as eaten, and one dish entry is more reliable than guessing the weight of each hidden ingredient.
 
 For each item:
 - name: what it is, as eaten.
-- usdaSearchTerm: a generic phrase that will find the closest entry in USDA FoodData Central (Foundation or SR Legacy). Name the food first, then form and cooking state, e.g. "chicken breast roasted meat only", "noodles rice cooked", "broccoli cooked boiled". Do not use brand or restaurant names.
+- usdaSearchTerm: a generic phrase that will find the closest entry in USDA FoodData Central, which holds both single foods and typical dishes. For a single food, name it first, then form and cooking state, e.g. "chicken breast roasted", "rice white cooked", "broccoli cooked". For a dish, use its common name plus the main protein, e.g. "pad thai with chicken", "burrito chicken cheese", "soup miso", "caesar salad with chicken". Do not use brand or restaurant names.
 - grams: your best estimate of the weight actually eaten. Use plate, cutlery and typical serving sizes for scale. If the user's note says how much was eaten ("ate about half"), apply it.
 - household: the same amount in everyday terms.
 - confidence: how sure you are of both the identification and the portion. Use "low" freely.

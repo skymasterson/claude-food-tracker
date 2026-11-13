@@ -77,7 +77,7 @@ export function mergeNutrients(usda: Nutrients | null, ai: Partial<Record<Nutrie
   for (const key of NUTRIENTS) {
     const u = usda?.[key];
     const a = ai?.[key];
-    if (isKnown(u)) out[key] = { value: u.value, source: 'usda' };
+    if (isKnown(u)) out[key] = { value: u.value, source: u.source };
     else if (typeof a === 'number' && Number.isFinite(a) && a >= 0) out[key] = { value: a, source: 'ai-estimate' };
   }
   return out;

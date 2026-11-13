@@ -104,10 +104,10 @@ describe('USDA parsing', () => {
     expect(extractNutrients([{ nutrientId: 2047, unitName: 'KCAL', value: 111 }]).kcal.value).toBe(111);
     expect(extractNutrients([{ nutrientId: 1008, unitName: 'kJ', value: 500 }]).kcal.value).toBeNull();
   });
-  it('ranks complete Foundation / SR Legacy foods ahead of incomplete or survey foods', () => {
+  it('keeps relevance order across data sets but pushes incomplete foods down', () => {
     const all = [1008, 1003, 1092, 1093, 1091];
     const ranked = rankMatches([food(1, 'SR Legacy', [1008, 1003]), food(2, 'Survey (FNDDS)', all), food(3, 'Foundation', all)].map(toMatch));
-    expect(ranked.map((m) => m.fdcId)).toEqual([3, 2, 1]);
+    expect(ranked.map((m) => m.fdcId)).toEqual([2, 3, 1]);
   });
 });
 

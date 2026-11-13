@@ -153,3 +153,22 @@ describe('upgrading data saved before animal protein existed', () => {
     expect(s.targets.protein.type).toBe('none');
   });
 });
+
+describe('USDA survey (typical dish) data', () => {
+  const survey = (description: string, foodCategory: string, protein: number) =>
+    toMatch({ fdcId: 9, description, dataType: 'Survey (FNDDS)', foodCategory, foodNutrients: [{ nutrientId: 1003, value: protein }, { nutrientId: 1093, value: 300 }] });
+  it('labels survey values with their own source', () => {
+    const m = survey('Pad Thai with chicken', 'Fried rice and lo/chow mein', 9);
+    expect(m.per100g.sodium).toEqual({ value: 300, source: 'usda-survey' });
+    expect(m.per100g.animalProtein).toEqual(UNKNOWN); // a mixed dish: no database animal share
+    const item = buildItem(ai(0.7, 5), m);
+    expect(item.per100g.protein).toEqual({ value: 9, source: 'usda-survey' });
+    expect(item.per100g.animalProtein).toEqual({ value: 9 * 0.7, source: 'ai-estimate' });
+    expect(item.per100g.kcal).toEqual({ value: 100, source: 'ai-estimate' });
+  });
+  it('classifies clear single-food survey categories', () => {
+    expect(survey('Chicken breast, roasted, skin not eaten', 'Chicken, whole pieces', 30).per100g.animalProtein).toEqual({ value: 30, source: 'usda-survey' });
+    expect(survey('Rice, white, cooked, no added fat', 'Rice', 2.7).per100g.animalProtein).toEqual({ value: 0, source: 'usda-survey' });
+    expect(survey('Burrito, chicken, cheese', 'Burritos and tacos', 13).per100g.animalProtein).toEqual(UNKNOWN);
+  });
+});

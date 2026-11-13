@@ -8,7 +8,8 @@ The full specification is in [SPEC.md](SPEC.md).
 
 ## How the numbers are kept honest
 
-- Every value shows its source: **USDA** (database), **AI est.** (dashed outline, italic, `~` prefix) or **You** (typed in).
+- Every value shows its source: **USDA** (a specific food), **Survey** (USDA's national-average recipe for a dish
+  such as pad thai or a burrito — a typical version, not that kitchen's), **AI est.** (dashed outline, italic, `~` prefix) or **You** (typed in).
 - A missing value is stored as unknown, shown as `?`, and left out of sums. Any total that includes an
   unknown reads **"at least X"**.
 - **Animal protein** (meat, poultry, fish, eggs, dairy) is tracked separately from total protein and carries the

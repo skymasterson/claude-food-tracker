@@ -8,7 +8,8 @@ The full specification is in [SPEC.md](SPEC.md).
 
 ## How the numbers are kept honest
 
-- Every value shows its source: **USDA** (a specific food), **Survey** (USDA's national-average recipe for a dish
+- Every value shows its source: **USDA** (a specific food), **FatSec** (FatSecret: a brand's or chain's
+  published figures), **Survey** (USDA's national-average recipe for a dish
   such as pad thai or a burrito — a typical version, not that kitchen's), **AI est.** (dashed outline, italic, `~` prefix) or **You** (typed in).
 - A missing value is stored as unknown, shown as `?`, and left out of sums. Any total that includes an
   unknown reads **"at least X"**.
@@ -26,6 +27,9 @@ The full specification is in [SPEC.md](SPEC.md).
 1. **Anthropic API key** — <https://console.anthropic.com> → sign up → *Billing*: add a small prepaid
    balance (US$5 lasts a long time) → *API keys* → *Create key*. Copy the key (starts with `sk-ant-`).
 2. **USDA FoodData Central key** (free) — <https://fdc.nal.usda.gov/api-key-signup> → the key arrives by email.
+
+**Optional — FatSecret** (branded, packaged and chain-restaurant foods; no phosphorus): needs a small relay
+you own. See [docs/fatsecret-relay.md](docs/fatsecret-relay.md).
 
 Both keys are typed into the app's **Settings** screen on your phone. They are stored only on the phone
 and are never included in backups.

@@ -55,10 +55,11 @@ export function statusText(status: Status, key: NutrientKey): string {
 export const SOURCE_LABEL: Record<Source, string> = {
   usda: 'USDA',
   'usda-survey': 'USDA survey (typical dish)',
+  fatsecret: 'FatSecret',
   'ai-estimate': 'AI estimate',
   'user-entered': 'Entered by you',
 };
-export const SOURCE_SHORT: Record<Source, string> = { usda: 'USDA', 'usda-survey': 'Survey', 'ai-estimate': 'AI est.', 'user-entered': 'You' };
+export const SOURCE_SHORT: Record<Source, string> = { usda: 'USDA', 'usda-survey': 'Survey', fatsecret: 'FatSec', 'ai-estimate': 'AI est.', 'user-entered': 'You' };
 
 export function parseNum(text: string): number | null {
   const t = text.trim().replace(',', '.');

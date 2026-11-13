@@ -58,7 +58,7 @@ export function RecipeEdit() {
         </label>
       </section>
       <h2>Ingredients <span className="muted small">— amounts for the whole recipe</span></h2>
-      <ItemsEditor items={items} onChange={setItems} usdaKey={settings.usdaKey} addLabel="Add an ingredient" />
+      <ItemsEditor items={items} onChange={setItems} settings={settings} addLabel="Add an ingredient" />
       <section className="card">
         <h2>Per serving</h2>
         <dl className="meal-totals">

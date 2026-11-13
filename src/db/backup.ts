@@ -5,7 +5,7 @@ import { DB_NUTRIENTS, type Entry, type Favourite, type Item, type ItemTemplate,
 export const BACKUP_APP = 'picture-food-tracker';
 export const BACKUP_VERSION = 2; // v2 adds animal protein; v1 backups are upgraded on restore
 /** API keys are deliberately left out of backups so a shared file never leaks them. */
-const SECRET_KEYS = ['anthropicKey', 'usdaKey'];
+const SECRET_KEYS = ['anthropicKey', 'usdaKey', 'fatsecretToken'];
 
 export interface Backup {
   app: string;

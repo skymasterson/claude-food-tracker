@@ -84,6 +84,6 @@ export function mergeNutrients(usda: Nutrients | null, ai: Partial<Record<Nutrie
 }
 
 export function toTemplate(i: ItemTemplate): ItemTemplate {
-  const { name, grams, household, per100g, fdcId, usdaDescription, confidence, aiAnimalShare } = i;
-  return { name, grams, household, per100g, fdcId, usdaDescription, confidence, aiAnimalShare };
+  const { name, grams, household, per100g, fdcId, fatsecretId, usdaDescription, confidence, aiAnimalShare } = i;
+  return { name, grams, household, per100g, fdcId, fatsecretId, usdaDescription, confidence, aiAnimalShare };
 }

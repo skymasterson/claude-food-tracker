@@ -21,6 +21,10 @@ const SCHEMA = {
           },
           grams: { type: 'number', description: 'Estimated weight actually eaten, in grams' },
           household: { type: 'string', description: 'Household description of that amount, e.g. "1 cup", "1 fillet"' },
+          brand: {
+            anyOf: [{ type: 'string' }, { type: 'null' }],
+            description: 'Name of the restaurant CHAIN or packaged-food brand this item is from (e.g. "Chipotle", "Starbucks", "Chobani"), only when the note or visible packaging makes it known. null for home cooking, independent restaurants and unknown.',
+          },
           confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
           animalProteinShare: {
             ...nullableNumber,
@@ -40,7 +44,7 @@ const SCHEMA = {
             additionalProperties: false,
           },
         },
-        required: ['name', 'usdaSearchTerm', 'grams', 'household', 'confidence', 'animalProteinShare', 'per100g'],
+        required: ['name', 'usdaSearchTerm', 'grams', 'household', 'brand', 'confidence', 'animalProteinShare', 'per100g'],
         additionalProperties: false,
       },
     },
@@ -56,6 +60,7 @@ Break the meal into its distinct components when they sit separately on the plat
 For each item:
 - name: what it is, as eaten.
 - usdaSearchTerm: a generic phrase that will find the closest entry in USDA FoodData Central, which holds both single foods and typical dishes. For a single food, name it first, then form and cooking state, e.g. "chicken breast roasted", "rice white cooked", "broccoli cooked". For a dish, use its common name plus the main protein, e.g. "pad thai with chicken", "burrito chicken cheese", "soup miso", "caesar salad with chicken". Do not use brand or restaurant names.
+- brand: the restaurant chain or packaged brand, only if the note or packaging says so; it is used to look up that company's published figures. For a chain menu item, make "name" the menu item's name (e.g. "Chicken burrito bowl"). Never guess a brand.
 - grams: your best estimate of the weight actually eaten. Use plate, cutlery and typical serving sizes for scale. If the user's note says how much was eaten ("ate about half"), apply it.
 - household: the same amount in everyday terms.
 - confidence: how sure you are of both the identification and the portion. Use "low" freely.

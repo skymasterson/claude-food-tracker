@@ -8,6 +8,9 @@ export interface Settings {
   targets: Targets;
   anthropicKey: string;
   usdaKey: string;
+  /** Address of the user's own FatSecret relay (Cloudflare Worker) and the passphrase it expects. */
+  fatsecretUrl: string;
+  fatsecretToken: string;
   aiModel: string;
   lastBackupAt: number | null;
   seenNotice: boolean;
@@ -17,6 +20,8 @@ export const DEFAULT_SETTINGS: Settings = {
   targets: DEFAULT_TARGETS,
   anthropicKey: '',
   usdaKey: '',
+  fatsecretUrl: '',
+  fatsecretToken: '',
   aiModel: DEFAULT_MODEL,
   lastBackupAt: null,
   seenNotice: false,

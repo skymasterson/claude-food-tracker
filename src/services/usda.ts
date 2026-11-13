@@ -4,11 +4,15 @@ import { emptyNutrients } from '../domain/nutrients';
 import { DB_NUTRIENTS, type Nutrients, type Source } from '../domain/types';
 
 export interface FoodMatch {
-  fdcId: number;
+  fdcId?: number;
+  fatsecretId?: string;
+  /** Typical serving weight and wording, when the database gives one. */
+  defaultGrams?: number;
+  household?: string;
   description: string;
   dataType: string;
   per100g: Nutrients;
-  /** How many of the five database nutrients this food has. */
+  /** How many of the database nutrients this food has. */
   completeness: number;
 }
 

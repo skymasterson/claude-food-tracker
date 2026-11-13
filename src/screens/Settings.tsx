@@ -4,6 +4,7 @@ import { deleteAllData, setSetting, type Settings as S } from '../db/repo';
 import { parseNum } from '../domain/format';
 import { NUTRIENTS, NUTRIENT_META, type NutrientKey, type Target, type TargetType } from '../domain/types';
 import { MODELS } from '../services/ai/models';
+import { relayConfigured, testRelay } from '../services/fatsecret';
 import { useSettings } from '../store';
 
 export const DISCLAIMER =
@@ -50,16 +51,16 @@ function TargetRow({ nutrient, target, onChange }: { nutrient: NutrientKey; targ
   );
 }
 
-function KeyField({ label, value, onSave, help }: { label: string; value: string; onSave: (v: string) => void; help: React.ReactNode }) {
+function KeyField({ label, value, onSave, help, plain }: { label: string; value: string; onSave: (v: string) => void; help: React.ReactNode; plain?: boolean }) {
   const [text, setText] = useState(value);
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(Boolean(plain));
   return (
     <label>
       {label}
       <span className="row">
         <input type={show ? 'text' : 'password'} value={text} autoComplete="off" spellCheck={false} placeholder="not set"
           onChange={(e) => setText(e.target.value)} onBlur={() => text.trim() !== value && onSave(text.trim())} />
-        <button type="button" className="btn small" onClick={() => setShow(!show)}>{show ? 'Hide' : 'Show'}</button>
+        {!plain && <button type="button" className="btn small" onClick={() => setShow(!show)}>{show ? 'Hide' : 'Show'}</button>}
       </span>
       <span className="muted small">{help} {value ? '✓ Saved on this device.' : ''}</span>
     </label>
@@ -69,6 +70,8 @@ function KeyField({ label, value, onSave, help }: { label: string; value: string
 export function Settings() {
   const settings = useSettings();
   const [confirmText, setConfirmText] = useState('');
+  const [relayTest, setRelayTest] = useState<{ ok: boolean; text: string } | null>(null);
+  const [testing, setTesting] = useState(false);
   if (!settings) return <p className="muted">Loading…</p>;
   const set = <K extends keyof S>(k: K, v: S[K]) => void setSetting(k, v);
 
@@ -98,8 +101,36 @@ export function Settings() {
           </select>
         </label>
         <p className="muted small">
-          Keys are stored only on this phone and sent only to Anthropic and USDA. Photos you analyse are sent to Anthropic. Keys are not included in backups.
+          Keys are stored only on this phone and sent only to Anthropic, USDA and (if set up) your own FatSecret relay. Photos you analyse are sent to Anthropic. Keys are not included in backups.
         </p>
+      </section>
+
+      <section className="card">
+        <h2>FatSecret (optional)</h2>
+        <p className="muted small">
+          Adds branded, packaged and chain-restaurant foods. FatSecret has no phosphorus values, and it needs your own relay
+          (a free Cloudflare Worker) — see the setup guide in the project's <code>docs/fatsecret-relay.md</code>.
+        </p>
+        <KeyField label="Relay address" value={settings.fatsecretUrl} onSave={(v) => set('fatsecretUrl', v)} plain
+          help="Looks like https://something.workers.dev" />
+        <KeyField label="Relay passphrase" value={settings.fatsecretToken} onSave={(v) => set('fatsecretToken', v)}
+          help="The RELAY_TOKEN you set on the relay." />
+        <button className="btn" disabled={!relayConfigured(settings) || testing}
+          onClick={async () => {
+            setTesting(true);
+            setRelayTest(null);
+            try {
+              setRelayTest({ ok: true, text: await testRelay(settings) });
+            } catch (e) {
+              setRelayTest({ ok: false, text: e instanceof Error ? e.message : 'Test failed.' });
+            } finally {
+              setTesting(false);
+            }
+          }}>
+          {testing ? 'Testing…' : 'Test FatSecret connection'}
+        </button>
+        {relayTest && <p className={`notice${relayTest.ok ? '' : ' warn'}`} role="status" data-testid="relay-test">{relayTest.text}</p>}
+        <p className="muted small"><a href="https://www.fatsecret.com" target="_blank" rel="noreferrer">Powered by fatsecret</a></p>
       </section>
 
       <section className="card">

@@ -10,6 +10,8 @@ export interface AiItem {
   confidence: Confidence;
   /** The model's own estimate per 100 g; null where it cannot estimate. Only used as a labelled fallback. */
   per100g: Record<DbNutrient, number | null>;
+  /** Restaurant chain or packaged-food brand, when the note or photo makes it known. */
+  brand: string | null;
   /** Estimated share (0..1) of this food's protein that is animal protein; null if it cannot be judged. */
   animalProteinShare: number | null;
 }
@@ -48,6 +50,7 @@ export function sanitizeAiItems(raw: unknown): AiItem[] {
       household: typeof r.household === 'string' ? r.household.trim() : '',
       confidence: c === 'high' || c === 'medium' || c === 'low' ? c : 'low',
       per100g,
+      brand: typeof r.brand === 'string' && r.brand.trim() ? r.brand.trim() : null,
       animalProteinShare: typeof r.animalProteinShare === 'number' && r.animalProteinShare >= 0 && r.animalProteinShare <= 1 ? r.animalProteinShare : null,
     });
   }

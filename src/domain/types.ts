@@ -15,8 +15,9 @@ export const NUTRIENT_META: Record<NutrientKey, { label: string; short: string; 
 /**
  * usda: a specific food in USDA's Foundation / SR Legacy data.
  * usda-survey: USDA's survey database (FNDDS) — a national-average recipe for a dish as typically eaten.
+ * fatsecret: FatSecret's database of branded, packaged and chain-restaurant foods (no phosphorus).
  */
-export type Source = 'usda' | 'usda-survey' | 'ai-estimate' | 'user-entered';
+export type Source = 'usda' | 'usda-survey' | 'fatsecret' | 'ai-estimate' | 'user-entered';
 
 /** value === null means UNKNOWN. It is never treated as zero. */
 export interface NutrientValue {
@@ -34,6 +35,8 @@ export interface ItemTemplate {
   household?: string;
   per100g: Nutrients;
   fdcId?: number;
+  fatsecretId?: string;
+  /** Description of the matched database food (USDA or FatSecret). */
   usdaDescription?: string;
   confidence?: Confidence;
   /** The AI's estimate (0..1) of how much of this food's protein is animal protein; kept so it survives a food swap. */

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { animalProteinValue } from '../domain/animal';
 import { parseNum } from '../domain/format';
 import { NUTRIENTS, type ItemTemplate } from '../domain/types';
+import type { Settings } from '../db/repo';
 import type { FoodMatch } from '../services/usda';
 import { FoodSearch } from './FoodSearch';
 import { NutrientCell } from './NutrientCell';
@@ -37,10 +38,10 @@ function GramsInput({ grams, onChange, name }: { grams: number; onChange: (g: nu
   );
 }
 
-export function ItemsEditor({ items, onChange, usdaKey, addLabel = 'Add a food' }: {
+export function ItemsEditor({ items, onChange, settings, addLabel = 'Add a food' }: {
   items: ItemTemplate[];
   onChange: (items: ItemTemplate[]) => void;
-  usdaKey: string;
+  settings: Settings;
   addLabel?: string;
 }) {
   const [mode, setMode] = useState<Mode>({ kind: 'idle' });
@@ -48,7 +49,7 @@ export function ItemsEditor({ items, onChange, usdaKey, addLabel = 'Add a food' 
 
   function pick(m: FoodMatch, index: number | null) {
     if (index === null) {
-      onChange([...items, { name: m.description, grams: 100, per100g: m.per100g, fdcId: m.fdcId, usdaDescription: m.description }]);
+      onChange([...items, { name: m.description, grams: m.defaultGrams ?? 100, household: m.household, per100g: m.per100g, fdcId: m.fdcId, fatsecretId: m.fatsecretId, usdaDescription: m.description }]);
     } else {
       // Swapping the matched food replaces every value with the database's; missing ones become unknown.
       const old = items[index];
@@ -57,7 +58,7 @@ export function ItemsEditor({ items, onChange, usdaKey, addLabel = 'Add a food' 
       if (per100g.animalProtein.value === null && old.aiAnimalShare !== undefined) {
         per100g.animalProtein = animalProteinValue(per100g.protein, old.aiAnimalShare, 'ai-estimate');
       }
-      replace(index, { ...old, per100g, fdcId: m.fdcId, usdaDescription: m.description });
+      replace(index, { ...old, per100g, fdcId: m.fdcId, fatsecretId: m.fatsecretId, usdaDescription: m.description });
     }
     setMode({ kind: 'idle' });
   }
@@ -72,7 +73,7 @@ export function ItemsEditor({ items, onChange, usdaKey, addLabel = 'Add a food' 
             <div className="item-name">
               <strong>{item.name}</strong>
               <span className="muted small">
-                {[item.household, item.confidence ? `${item.confidence} confidence` : '', item.usdaDescription ? `USDA: ${item.usdaDescription}` : 'no database match']
+                {[item.household, item.confidence ? `${item.confidence} confidence` : '', item.usdaDescription ? `${item.fatsecretId ? 'FatSecret' : 'USDA'}: ${item.usdaDescription}` : 'no database match']
                   .filter(Boolean)
                   .join(' · ')}
               </span>
@@ -82,7 +83,7 @@ export function ItemsEditor({ items, onChange, usdaKey, addLabel = 'Add a food' 
             {NUTRIENTS.map((k) => <NutrientCell key={k} item={item} nutrient={k} />)}
           </div>
           {mode.kind === 'search' && mode.index === i ? (
-            <FoodSearch initialQuery={item.name} usdaKey={usdaKey} onPick={(m) => pick(m, i)} onCancel={() => setMode({ kind: 'idle' })} />
+            <FoodSearch initialQuery={item.name} settings={settings} onPick={(m) => pick(m, i)} onCancel={() => setMode({ kind: 'idle' })} />
           ) : mode.kind === 'manual' && mode.index === i ? (
             <ValuesForm initial={item} onCancel={() => setMode({ kind: 'idle' })} onSave={(it) => { replace(i, it); setMode({ kind: 'idle' }); }} />
           ) : (
@@ -95,7 +96,7 @@ export function ItemsEditor({ items, onChange, usdaKey, addLabel = 'Add a food' 
         </div>
       ))}
       {mode.kind === 'search' && mode.index === null && (
-        <FoodSearch initialQuery="" usdaKey={usdaKey} onPick={(m) => pick(m, null)} onCancel={() => setMode({ kind: 'idle' })} />
+        <FoodSearch initialQuery="" settings={settings} onPick={(m) => pick(m, null)} onCancel={() => setMode({ kind: 'idle' })} />
       )}
       {mode.kind === 'manual' && mode.index === null && (
         <ValuesForm onCancel={() => setMode({ kind: 'idle' })} onSave={(it) => { onChange([...items, it]); setMode({ kind: 'idle' }); }} />

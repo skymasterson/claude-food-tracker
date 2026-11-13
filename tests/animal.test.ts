@@ -17,7 +17,7 @@ const usda = (v: number) => ({ value: v, source: 'usda' as const });
 const food = (description: string, foodCategory: string | undefined, protein: number) =>
   toMatch({ fdcId: 1, description, dataType: 'SR Legacy', foodCategory, foodNutrients: [{ nutrientId: 1003, value: protein }] });
 const ai = (share: number | null, protein: number | null = 7): AiItem => ({
-  name: 'Dish', usdaSearchTerm: 'dish', grams: 200, household: '', confidence: 'medium', animalProteinShare: share,
+  name: 'Dish', usdaSearchTerm: 'dish', grams: 200, household: '', confidence: 'medium', brand: null, animalProteinShare: share,
   per100g: { kcal: 100, protein, potassium: null, sodium: null, phosphorus: null },
 });
 

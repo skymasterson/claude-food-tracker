@@ -4,7 +4,7 @@
   --ok: #2c7a4b; --approach: #96590a; --over: #b3261e;
   --ok-bg: #e4f1e8; --approach-bg: #fbeed3; --over-bg: #fbe3e0;
   --bar: #2a8f84; --grid: #e4e0d6; --track: #e7e3da;
-  --usda-bg: #e6f0ee; --ai-bg: #fff4d6; --user-bg: #e8e9f7;
+  --usda-bg: #e6f0ee; --ai-bg: #fff4d6; --user-bg: #e8e9f7; --fs-bg: #e3f1d9;
   --radius: 14px;
   color-scheme: light dark;
 }
@@ -15,7 +15,7 @@
     --ok: #7fd09a; --approach: #f0b95a; --over: #ff8a80;
     --ok-bg: #19301f; --approach-bg: #3a2c0e; --over-bg: #40191a;
     --bar: #4fb3a6; --grid: #2c3533; --track: #2c3533;
-    --usda-bg: #1d302d; --ai-bg: #3a300f; --user-bg: #25264a;
+    --usda-bg: #1d302d; --ai-bg: #3a300f; --user-bg: #25264a; --fs-bg: #24331a;
   }
 }
 * { box-sizing: border-box; }
@@ -140,6 +140,8 @@ legend { font-weight: 700; padding: 0 6px 0 0; }
 .ncell-src { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
 .src-usda, .src-usda-survey { background: var(--usda-bg); }
 .src-usda-survey { border: 1.5px solid var(--primary); }
+.src-fatsecret { background: var(--fs-bg); }
+.results-head { font-size: 0.8rem; font-weight: 700; color: var(--muted); margin: 4px 0 0; }
 .src-user-entered { background: var(--user-bg); }
 .src-ai-estimate { background: var(--ai-bg); border: 1.5px dashed var(--approach); }
 .src-ai-estimate .ncell-val { font-style: italic; }

@@ -17,7 +17,7 @@ const r2 = (n: number | null) => (n === null ? null : Math.round(n * 100) / 100)
 /** One row per item, with the source of every value. Unknown values are empty cells. */
 export function itemsCsv(entries: Entry[], items: Item[]): string {
   const byEntry = new Map(entries.map((e) => [e.id!, e]));
-  const header: string[] = ['date', 'time', 'meal', 'entry', 'restaurant', 'note', 'food', 'grams', 'household_amount', 'usda_fdc_id', 'usda_description'];
+  const header: string[] = ['date', 'time', 'meal', 'entry', 'restaurant', 'note', 'food', 'grams', 'household_amount', 'usda_fdc_id', 'fatsecret_food_id', 'matched_food'];
   for (const k of NUTRIENTS) header.push(`${k}_${NUTRIENT_META[k].unit}`, `${k}_source`);
   const rows: (string | number | null | undefined)[][] = [header];
   const sorted = [...items].sort((a, b) => a.day.localeCompare(b.day) || a.loggedAt - b.loggedAt || (a.id ?? 0) - (b.id ?? 0));
@@ -26,7 +26,7 @@ export function itemsCsv(entries: Entry[], items: Item[]): string {
     if (!e) continue;
     const row: (string | number | null | undefined)[] = [
       e.day, fmtTime(e.time), e.mealType, e.title, e.isRestaurant ? 'yes' : 'no', e.note ?? '',
-      it.name, it.grams, it.household ?? '', it.fdcId ?? null, it.usdaDescription ?? '',
+      it.name, it.grams, it.household ?? '', it.fdcId ?? null, it.fatsecretId ?? null, it.usdaDescription ?? '',
     ];
     for (const k of NUTRIENTS) {
       const amount = itemAmount(it, k);

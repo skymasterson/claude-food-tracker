@@ -106,11 +106,12 @@ function MealEditor({ initial }: { initial: MealDraft }) {
       </section>
 
       <h2>Foods <span className="muted small">— check each amount</span></h2>
-      <ItemsEditor items={items} onChange={setItems} usdaKey={settings.usdaKey} />
+      <ItemsEditor items={items} onChange={setItems} settings={settings} />
       {items.length > 0 && (
         <p className="legend small">
           {anyEstimate && <><span className="swatch src-ai-estimate">~12</span> AI estimate, not a database value. </>}
           {items.some((i) => NUTRIENTS.some((k) => i.per100g[k]?.source === 'usda-survey')) && <><span className="swatch src-usda-survey">Survey</span> USDA's national-average recipe for the dish, not this kitchen's. </>}
+          {items.some((i) => i.fatsecretId) && <><span className="swatch src-fatsecret">FatSec</span> FatSecret: the brand's or chain's published figures; it has no phosphorus. </>}
           {anyUnknown && <><span className="swatch src-unknown">?</span> Unknown — left out of totals, so totals read “at least”.</>}
         </p>
       )}

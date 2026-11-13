@@ -112,7 +112,7 @@ describe('USDA parsing', () => {
 });
 
 describe('AI output handling', () => {
-  const ai: AiItem = { name: 'Pad thai', usdaSearchTerm: 'pad thai', grams: 300, household: '1 plate', confidence: 'medium', animalProteinShare: 0.6, per100g: { kcal: 160, protein: 7, potassium: null, sodium: 450, phosphorus: null } };
+  const ai: AiItem = { name: 'Pad thai', usdaSearchTerm: 'pad thai', grams: 300, household: '1 plate', confidence: 'medium', brand: null, animalProteinShare: 0.6, per100g: { kcal: 160, protein: 7, potassium: null, sodium: 450, phosphorus: null } };
   it('turns implausible numbers into unknown rather than keeping them', () => {
     const [x] = sanitizeAiItems({ items: [{ name: ' Soup ', grams: -5, confidence: 'certain', per100g: { kcal: 40, protein: -1, potassium: 'lots', sodium: 300 } }] });
     expect(x).toMatchObject({ name: 'Soup', usdaSearchTerm: 'Soup', grams: 100, confidence: 'low', animalProteinShare: null });

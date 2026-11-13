@@ -1,7 +1,7 @@
 # Picture Food Tracker
 
 A personal Android home-screen web app (PWA). Photograph a meal, review an editable list of foods and
-portions, and log calories, protein, potassium, sodium and phosphorus against daily targets.
+portions, and log calories, total and animal protein, potassium, sodium and phosphorus against daily targets.
 The full specification is in [SPEC.md](SPEC.md).
 
 **Values are estimates. This is a logging aid, not medical advice.**
@@ -11,6 +11,11 @@ The full specification is in [SPEC.md](SPEC.md).
 - Every value shows its source: **USDA** (database), **AI est.** (dashed outline, italic, `~` prefix) or **You** (typed in).
 - A missing value is stored as unknown, shown as `?`, and left out of sums. Any total that includes an
   unknown reads **"at least X"**.
+- **Animal protein** (meat, poultry, fish, eggs, dairy) is tracked separately from total protein and carries the
+  protein limit. It is total protein × the food's animal share: taken from the USDA food category for single
+  foods (a database value), estimated by the AI for mixed dishes (labelled as an estimate, editable), and
+  unknown otherwise.
+- A progress bar whose total includes unknowns is marked **Incomplete** rather than OK.
 - Restaurant meals carry a standing note that sodium and phosphorus are likely underestimated.
 - Nothing leaves the phone except: the photo and note (sent to Anthropic for analysis) and food search
   terms (sent to USDA). There is no server and no account.

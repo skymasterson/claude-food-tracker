@@ -40,6 +40,7 @@ function FirstLaunch() {
         <ul>
           <li>Every number shows where it came from: USDA database, AI estimate, or entered by you.</li>
           <li>Missing values are shown as “?” and never counted as zero. Totals that include them read “at least”.</li>
+          <li>Animal protein is worked out from each food's type; for mixed dishes it is an estimate you can correct.</li>
           <li>Your log is stored only on this phone. Back it up from the Export tab.</li>
         </ul>
         <button className="btn primary big" onClick={() => setSetting('seenNotice', true)}>I understand</button>

@@ -3,7 +3,7 @@ import type { Status } from './targets';
 import { NUTRIENT_META, type NutrientKey, type Source, type Target } from './types';
 
 export function fmtNumber(value: number, key: NutrientKey): string {
-  const digits = key === 'protein' && Math.abs(value) < 100 ? 1 : 0;
+  const digits = (key === 'protein' || key === 'animalProtein') && Math.abs(value) < 100 ? 1 : 0;
   return value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: digits });
 }
 

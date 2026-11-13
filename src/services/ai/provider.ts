@@ -1,4 +1,6 @@
-import { NUTRIENTS, type Confidence, type NutrientKey } from '../../domain/types';
+import { DB_NUTRIENTS, type Confidence } from '../../domain/types';
+
+type DbNutrient = (typeof DB_NUTRIENTS)[number];
 
 export interface AiItem {
   name: string;
@@ -7,7 +9,9 @@ export interface AiItem {
   household: string;
   confidence: Confidence;
   /** The model's own estimate per 100 g; null where it cannot estimate. Only used as a labelled fallback. */
-  per100g: Record<NutrientKey, number | null>;
+  per100g: Record<DbNutrient, number | null>;
+  /** Estimated share (0..1) of this food's protein that is animal protein; null if it cannot be judged. */
+  animalProteinShare: number | null;
 }
 
 export interface AnalyzeInput {
@@ -31,8 +35,8 @@ export function sanitizeAiItems(raw: unknown): AiItem[] {
     if (!r || typeof r.name !== 'string' || !r.name.trim()) continue;
     const grams = typeof r.grams === 'number' && Number.isFinite(r.grams) && r.grams > 0 ? Math.round(r.grams) : 100;
     const p = (r.per100g ?? {}) as Record<string, unknown>;
-    const per100g = {} as Record<NutrientKey, number | null>;
-    for (const k of NUTRIENTS) {
+    const per100g = {} as Record<DbNutrient, number | null>;
+    for (const k of DB_NUTRIENTS) {
       const v = p[k];
       per100g[k] = typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : null;
     }
@@ -44,6 +48,7 @@ export function sanitizeAiItems(raw: unknown): AiItem[] {
       household: typeof r.household === 'string' ? r.household.trim() : '',
       confidence: c === 'high' || c === 'medium' || c === 'low' ? c : 'low',
       per100g,
+      animalProteinShare: typeof r.animalProteinShare === 'number' && r.animalProteinShare >= 0 && r.animalProteinShare <= 1 ? r.animalProteinShare : null,
     });
   }
   return out;

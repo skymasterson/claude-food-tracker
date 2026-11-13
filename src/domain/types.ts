@@ -1,9 +1,12 @@
-export const NUTRIENTS = ['kcal', 'protein', 'potassium', 'sodium', 'phosphorus'] as const;
+export const NUTRIENTS = ['kcal', 'protein', 'animalProtein', 'potassium', 'sodium', 'phosphorus'] as const;
 export type NutrientKey = (typeof NUTRIENTS)[number];
+/** Nutrients a food database reports directly. Animal protein is derived: total protein x animal share. */
+export const DB_NUTRIENTS = ['kcal', 'protein', 'potassium', 'sodium', 'phosphorus'] as const satisfies readonly NutrientKey[];
 
 export const NUTRIENT_META: Record<NutrientKey, { label: string; short: string; unit: string }> = {
   kcal: { label: 'Calories', short: 'Cal', unit: 'kcal' },
-  protein: { label: 'Protein', short: 'Prot', unit: 'g' },
+  protein: { label: 'Total protein', short: 'Prot', unit: 'g' },
+  animalProtein: { label: 'Animal protein', short: 'Anim', unit: 'g' },
   potassium: { label: 'Potassium', short: 'K', unit: 'mg' },
   sodium: { label: 'Sodium', short: 'Na', unit: 'mg' },
   phosphorus: { label: 'Phosphorus', short: 'Phos', unit: 'mg' },
@@ -29,6 +32,8 @@ export interface ItemTemplate {
   fdcId?: number;
   usdaDescription?: string;
   confidence?: Confidence;
+  /** The AI's estimate (0..1) of how much of this food's protein is animal protein; kept so it survives a food swap. */
+  aiAnimalShare?: number;
 }
 
 export interface Item extends ItemTemplate {
@@ -82,7 +87,8 @@ export type Targets = Record<NutrientKey, Target>;
 
 export const DEFAULT_TARGETS: Targets = {
   kcal: { type: 'none', value: 0 },
-  protein: { type: 'maximum', value: 65 },
+  protein: { type: 'none', value: 0 },
+  animalProtein: { type: 'maximum', value: 65 },
   potassium: { type: 'maximum', value: 1800 },
   sodium: { type: 'maximum', value: 2000 },
   phosphorus: { type: 'maximum', value: 1000 },

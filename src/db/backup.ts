@@ -1,8 +1,9 @@
 import { db } from './db';
-import { NUTRIENTS, type Entry, type Favourite, type Item, type ItemTemplate, type Recipe } from '../domain/types';
+import { migrateTargets, migrateTemplate } from '../domain/animal';
+import { DB_NUTRIENTS, type Entry, type Favourite, type Item, type ItemTemplate, type Recipe, type Targets } from '../domain/types';
 
 export const BACKUP_APP = 'picture-food-tracker';
-export const BACKUP_VERSION = 1;
+export const BACKUP_VERSION = 2; // v2 adds animal protein; v1 backups are upgraded on restore
 /** API keys are deliberately left out of backups so a shared file never leaks them. */
 const SECRET_KEYS = ['anthropicKey', 'usdaKey'];
 
@@ -34,7 +35,7 @@ function isTemplate(i: unknown): i is ItemTemplate {
   if (!i || typeof i !== 'object') return false;
   const t = i as ItemTemplate;
   if (typeof t.name !== 'string' || typeof t.grams !== 'number' || !t.per100g || typeof t.per100g !== 'object') return false;
-  return NUTRIENTS.every((k) => {
+  return DB_NUTRIENTS.every((k) => {
     const v = t.per100g[k];
     return v && typeof v === 'object' && (v.value === null || typeof v.value === 'number');
   });
@@ -69,11 +70,13 @@ export async function restoreBackup(data: unknown): Promise<{ entries: number; i
   await db.transaction('rw', [db.entries, db.items, db.favourites, db.recipes, db.settings], async () => {
     await Promise.all([db.entries.clear(), db.items.clear(), db.favourites.clear(), db.recipes.clear()]);
     await db.entries.bulkPut(b.entries);
-    await db.items.bulkPut(b.items);
-    await db.favourites.bulkPut(b.favourites);
-    await db.recipes.bulkPut(b.recipes);
+    await db.items.bulkPut(b.items.map(migrateTemplate));
+    await db.favourites.bulkPut(b.favourites.map((f) => ({ ...f, items: f.items.map(migrateTemplate) })));
+    await db.recipes.bulkPut(b.recipes.map((r) => ({ ...r, ingredients: r.ingredients.map(migrateTemplate) })));
     for (const s of b.settings) {
-      if (!SECRET_KEYS.includes(s.key) && typeof s.key === 'string') await db.settings.put({ key: s.key, value: s.value });
+      if (SECRET_KEYS.includes(s.key) || typeof s.key !== 'string') continue;
+      const value = s.key === 'targets' && s.value ? migrateTargets(s.value as Partial<Targets>) : s.value;
+      await db.settings.put({ key: s.key, value });
     }
   });
   return { entries: b.entries.length, items: b.items.length };

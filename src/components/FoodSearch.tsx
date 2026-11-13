@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fmtValue } from '../domain/format';
-import { NUTRIENTS, NUTRIENT_META } from '../domain/types';
+import { DB_NUTRIENTS, NUTRIENTS, NUTRIENT_META } from '../domain/types';
 import { searchFoods, type FoodMatch } from '../services/usda';
 
 export function FoodSearch({ initialQuery, usdaKey, onPick, onCancel }: {
@@ -62,7 +62,7 @@ export function FoodSearch({ initialQuery, usdaKey, onPick, onCancel }: {
                 <span className="result-meta">
                   {m.dataType} · per 100 g:{' '}
                   {NUTRIENTS.map((k) => `${NUTRIENT_META[k].short} ${fmtValue(m.per100g[k].value, k, false)}`).join(' · ')}
-                  {m.completeness < NUTRIENTS.length && <em> · some values missing</em>}
+                  {m.completeness < DB_NUTRIENTS.length && <em> · some values missing</em>}
                 </span>
               </button>
             </li>

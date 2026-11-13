@@ -98,7 +98,7 @@ export function Export() {
               <tr><th>Date</th>{NUTRIENTS.map((k) => <th key={k}>{NUTRIENT_META[k].label}</th>)}</tr>
             </thead>
             <tbody>
-              {rows.length === 0 && <tr><td colSpan={6}>No entries in this range.</td></tr>}
+              {rows.length === 0 && <tr><td colSpan={NUTRIENTS.length + 1}>No entries in this range.</td></tr>}
               {rows.map((r) => (
                 <tr key={r.day}>
                   <td>{long(r.day)}</td>
@@ -113,7 +113,8 @@ export function Export() {
         </div>
         <p className="small">
           “At least” means one or more foods that day had no value for that nutrient, so the true total is higher. Values combine USDA
-          FoodData Central data, AI estimates and hand-entered figures; portions are estimated by eye. Sodium and phosphorus in restaurant
+          FoodData Central data, AI estimates and hand-entered figures. Animal protein is total protein multiplied by the animal share of
+          each food, taken from the USDA food category for single foods and estimated for mixed dishes; portions are estimated by eye. Sodium and phosphorus in restaurant
           meals are likely underestimated. This is a self-kept log, not a clinical measurement.
         </p>
 

@@ -36,6 +36,9 @@ export function ValuesForm({ initial, onSave, onCancel }: {
     for (const k of NUTRIENTS) {
       if (vals[k].trim() !== '' && parseNum(vals[k]) === null) return setError(`${NUTRIENT_META[k].label} must be a number, or left blank if unknown.`);
     }
+    const prot = parseNum(vals.protein);
+    const anim = parseNum(vals.animalProtein);
+    if (prot !== null && anim !== null && anim > prot + 0.05) return setError('Animal protein cannot be more than total protein.');
     const per100g = {} as Nutrients;
     for (const k of NUTRIENTS) {
       const unchanged = initial && vals[k] === start(k) && String(g) === String(initial.grams);
@@ -66,7 +69,7 @@ export function ValuesForm({ initial, onSave, onCancel }: {
           <input value={household} onChange={(e) => setHousehold(e.target.value)} placeholder="e.g. 1 bowl" />
         </label>
       </div>
-      <p className="muted small">Values for the amount eaten. Leave a field blank if you don't know it — it is recorded as unknown, not as zero.</p>
+      <p className="muted small">Values for the amount eaten. Leave a field blank if you don't know it — it is recorded as unknown, not as zero. Animal protein is the part of the protein from meat, poultry, fish, eggs and dairy.</p>
       <div className="grid5">
         {NUTRIENTS.map((k) => (
           <label key={k}>

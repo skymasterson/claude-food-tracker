@@ -9,14 +9,16 @@ const WORD: Record<StatusState, string> = { none: '', ok: 'OK', approaching: 'Ne
 export function NutrientBar({ nutrient, total, target, compact }: { nutrient: NutrientKey; total: Total; target: Target; compact?: boolean }) {
   const status = targetStatus(total, target);
   const pct = status.fraction === null ? 0 : Math.round(status.fraction * 100);
+  // With unknown values the total is only a lower bound, so "under the limit" is not confirmed: say so instead of "OK".
+  const incomplete = status.uncertain && status.state === 'ok';
   const text = statusText(status, nutrient);
   return (
-    <div className={`nbar state-${status.state}${compact ? ' compact' : ''}`} data-nutrient={nutrient}>
+    <div className={`nbar state-${incomplete ? 'incomplete' : status.state}${compact ? ' compact' : ''}`} data-nutrient={nutrient}>
       <div className="nbar-head">
         <span className="nbar-label">{NUTRIENT_META[nutrient].label}</span>
         {status.state !== 'none' && (
           <span className="nbar-state">
-            <span aria-hidden="true">{ICON[status.state]}</span> {WORD[status.state]}
+            <span aria-hidden="true">{incomplete ? '?' : ICON[status.state]}</span> {incomplete ? 'Incomplete' : WORD[status.state]}
           </span>
         )}
       </div>

@@ -22,6 +22,10 @@ const SCHEMA = {
           grams: { type: 'number', description: 'Estimated weight actually eaten, in grams' },
           household: { type: 'string', description: 'Household description of that amount, e.g. "1 cup", "1 fillet"' },
           confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
+          animalProteinShare: {
+            ...nullableNumber,
+            description: 'Fraction from 0 to 1 of this item\'s protein that comes from animal sources (meat, poultry, fish, seafood, eggs, dairy). 1 for plain meat or egg, 0 for plant foods, an estimate for mixed dishes, null if you cannot judge.',
+          },
           per100g: {
             type: 'object',
             description: 'Your own estimate per 100 g of the food as eaten. Use null for any value you cannot estimate reasonably.',
@@ -36,7 +40,7 @@ const SCHEMA = {
             additionalProperties: false,
           },
         },
-        required: ['name', 'usdaSearchTerm', 'grams', 'household', 'confidence', 'per100g'],
+        required: ['name', 'usdaSearchTerm', 'grams', 'household', 'confidence', 'animalProteinShare', 'per100g'],
         additionalProperties: false,
       },
     },
@@ -55,6 +59,7 @@ For each item:
 - grams: your best estimate of the weight actually eaten. Use plate, cutlery and typical serving sizes for scale. If the user's note says how much was eaten ("ate about half"), apply it.
 - household: the same amount in everyday terms.
 - confidence: how sure you are of both the identification and the portion. Use "low" freely.
+- animalProteinShare: the person's protein limit applies to animal protein only, so judge how much of the item's protein is from meat, poultry, fish, seafood, eggs or dairy (1 = all, 0 = none). For a mixed dish, estimate from the visible proportions; return null rather than guess blindly.
 - per100g: your own estimate per 100 g as eaten, including typical added salt for the cooking style. These are only used when the database has no value. If you cannot give a reasonable estimate for a nutrient, return null for it rather than guessing; never return 0 as a placeholder.
 
 The user's note is the best evidence of what the dish is; trust it over appearance. If the input shows or describes no food, return an empty items list.`;

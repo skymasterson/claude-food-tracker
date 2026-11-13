@@ -42,7 +42,8 @@ describe('storage', () => {
     expect(await loadSettings()).toEqual(DEFAULT_SETTINGS);
     await setSetting('targets', { ...DEFAULT_SETTINGS.targets, sodium: { type: 'maximum', value: 1500 } });
     expect((await loadSettings()).targets.sodium.value).toBe(1500);
-    expect((await loadSettings()).targets.protein).toEqual({ type: 'maximum', value: 65 });
+    expect((await loadSettings()).targets.animalProtein).toEqual({ type: 'maximum', value: 65 });
+    expect((await loadSettings()).targets.protein.type).toBe('none');
   });
 });
 
@@ -111,10 +112,10 @@ describe('USDA parsing', () => {
 });
 
 describe('AI output handling', () => {
-  const ai: AiItem = { name: 'Pad thai', usdaSearchTerm: 'pad thai', grams: 300, household: '1 plate', confidence: 'medium', per100g: { kcal: 160, protein: 7, potassium: null, sodium: 450, phosphorus: null } };
+  const ai: AiItem = { name: 'Pad thai', usdaSearchTerm: 'pad thai', grams: 300, household: '1 plate', confidence: 'medium', animalProteinShare: 0.6, per100g: { kcal: 160, protein: 7, potassium: null, sodium: 450, phosphorus: null } };
   it('turns implausible numbers into unknown rather than keeping them', () => {
     const [x] = sanitizeAiItems({ items: [{ name: ' Soup ', grams: -5, confidence: 'certain', per100g: { kcal: 40, protein: -1, potassium: 'lots', sodium: 300 } }] });
-    expect(x).toMatchObject({ name: 'Soup', usdaSearchTerm: 'Soup', grams: 100, confidence: 'low' });
+    expect(x).toMatchObject({ name: 'Soup', usdaSearchTerm: 'Soup', grams: 100, confidence: 'low', animalProteinShare: null });
     expect(x.per100g).toEqual({ kcal: 40, protein: null, potassium: null, sodium: 300, phosphorus: null });
     expect(() => sanitizeAiItems({ nope: true })).toThrow();
   });

@@ -1,3 +1,4 @@
+import { animalProteinValue } from '../domain/animal';
 import { mergeNutrients } from '../domain/nutrients';
 import type { ItemTemplate } from '../domain/types';
 import type { Settings } from '../db/repo';
@@ -10,12 +11,18 @@ export interface AnalysisResult {
 }
 
 export function buildItem(ai: AiItem, match: FoodMatch | null): ItemTemplate {
+  const per100g = mergeNutrients(match?.per100g ?? null, ai.per100g);
+  // Animal protein: USDA's classification when the match is a clear animal or plant food;
+  // otherwise the AI's estimated share, labelled as an estimate; otherwise unknown.
+  const fromUsda = match?.per100g.animalProtein;
+  per100g.animalProtein = fromUsda && fromUsda.value !== null ? fromUsda : animalProteinValue(per100g.protein, ai.animalProteinShare, 'ai-estimate');
   return {
     name: ai.name,
     grams: ai.grams,
     household: ai.household || undefined,
     confidence: ai.confidence,
-    per100g: mergeNutrients(match?.per100g ?? null, ai.per100g),
+    aiAnimalShare: ai.animalProteinShare ?? undefined,
+    per100g,
     fdcId: match?.fdcId,
     usdaDescription: match?.description,
   };

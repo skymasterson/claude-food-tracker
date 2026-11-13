@@ -79,7 +79,7 @@ export function Settings() {
 
       <section className="card">
         <h2>Daily targets</h2>
-        <p className="muted small">Change these only as your care team advises.</p>
+        <p className="muted small">Change these only as your care team advises. Animal protein is the protein from meat, poultry, fish, eggs and dairy; total protein also includes plant protein.</p>
         {NUTRIENTS.map((k) => (
           <TargetRow key={k} nutrient={k} target={settings.targets[k]} onChange={(t) => set('targets', { ...settings.targets, [k]: t })} />
         ))}

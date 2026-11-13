@@ -3,7 +3,7 @@ import { NUTRIENTS, type ItemTemplate, type NutrientKey, type Nutrients, type Nu
 export const UNKNOWN: NutrientValue = { value: null, source: null };
 
 export function emptyNutrients(): Nutrients {
-  return { kcal: UNKNOWN, protein: UNKNOWN, potassium: UNKNOWN, sodium: UNKNOWN, phosphorus: UNKNOWN };
+  return { kcal: UNKNOWN, protein: UNKNOWN, animalProtein: UNKNOWN, potassium: UNKNOWN, sodium: UNKNOWN, phosphorus: UNKNOWN };
 }
 
 export function isKnown(v: NutrientValue | undefined): v is { value: number; source: Source } {
@@ -84,6 +84,6 @@ export function mergeNutrients(usda: Nutrients | null, ai: Partial<Record<Nutrie
 }
 
 export function toTemplate(i: ItemTemplate): ItemTemplate {
-  const { name, grams, household, per100g, fdcId, usdaDescription, confidence } = i;
-  return { name, grams, household, per100g, fdcId, usdaDescription, confidence };
+  const { name, grams, household, per100g, fdcId, usdaDescription, confidence, aiAnimalShare } = i;
+  return { name, grams, household, per100g, fdcId, usdaDescription, confidence, aiAnimalShare };
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { animalProteinValue } from '../domain/animal';
 import { parseNum } from '../domain/format';
 import { NUTRIENTS, type ItemTemplate } from '../domain/types';
 import type { FoodMatch } from '../services/usda';
@@ -50,7 +51,13 @@ export function ItemsEditor({ items, onChange, usdaKey, addLabel = 'Add a food' 
       onChange([...items, { name: m.description, grams: 100, per100g: m.per100g, fdcId: m.fdcId, usdaDescription: m.description }]);
     } else {
       // Swapping the matched food replaces every value with the database's; missing ones become unknown.
-      replace(index, { ...items[index], per100g: m.per100g, fdcId: m.fdcId, usdaDescription: m.description });
+      const old = items[index];
+      const per100g = { ...m.per100g };
+      // A mixed food has no database animal share; fall back to the AI's earlier estimate for this item if there is one.
+      if (per100g.animalProtein.value === null && old.aiAnimalShare !== undefined) {
+        per100g.animalProtein = animalProteinValue(per100g.protein, old.aiAnimalShare, 'ai-estimate');
+      }
+      replace(index, { ...old, per100g, fdcId: m.fdcId, usdaDescription: m.description });
     }
     setMode({ kind: 'idle' });
   }

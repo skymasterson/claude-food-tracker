@@ -1,13 +1,14 @@
 import { db } from '../db/db';
+import { animalProteinValue, animalShareFromUsda } from '../domain/animal';
 import { emptyNutrients } from '../domain/nutrients';
-import { NUTRIENTS, type NutrientKey, type Nutrients } from '../domain/types';
+import { DB_NUTRIENTS, type Nutrients } from '../domain/types';
 
 export interface FoodMatch {
   fdcId: number;
   description: string;
   dataType: string;
   per100g: Nutrients;
-  /** How many of the five tracked nutrients this food has. */
+  /** How many of the five database nutrients this food has. */
   completeness: number;
 }
 
@@ -16,7 +17,7 @@ const CACHE_MS = 180 * 86400000;
 
 // FoodData Central nutrient ids. Energy: 1008 (kcal); Foundation foods may only carry
 // Atwater energy (2047 general, 2048 specific).
-const NUTRIENT_IDS: Record<NutrientKey, number[]> = {
+const NUTRIENT_IDS: Record<(typeof DB_NUTRIENTS)[number], number[]> = {
   kcal: [1008, 2047, 2048],
   protein: [1003],
   potassium: [1092],
@@ -33,12 +34,13 @@ interface ApiFood {
   fdcId: number;
   description: string;
   dataType: string;
+  foodCategory?: string;
   foodNutrients?: ApiNutrient[];
 }
 
 export function extractNutrients(foodNutrients: ApiNutrient[] | undefined): Nutrients {
   const out = emptyNutrients();
-  for (const key of NUTRIENTS) {
+  for (const key of DB_NUTRIENTS) {
     for (const id of NUTRIENT_IDS[key]) {
       const n = foodNutrients?.find((x) => x.nutrientId === id && typeof x.value === 'number');
       if (!n) continue;
@@ -52,12 +54,14 @@ export function extractNutrients(foodNutrients: ApiNutrient[] | undefined): Nutr
 
 export function toMatch(f: ApiFood): FoodMatch {
   const per100g = extractNutrients(f.foodNutrients);
+  // Single-ingredient foods are classified animal / plant from USDA's food category; mixed foods stay unknown.
+  per100g.animalProtein = animalProteinValue(per100g.protein, animalShareFromUsda(f.foodCategory, f.description), 'usda');
   return {
     fdcId: f.fdcId,
     description: f.description,
     dataType: f.dataType,
     per100g,
-    completeness: NUTRIENTS.filter((k) => per100g[k].value !== null).length,
+    completeness: DB_NUTRIENTS.filter((k) => per100g[k].value !== null).length,
   };
 }
 
@@ -67,7 +71,7 @@ export function toMatch(f: ApiFood): FoodMatch {
  */
 export function rankMatches(matches: FoodMatch[]): FoodMatch[] {
   const score = (m: FoodMatch, i: number) =>
-    i + (NUTRIENTS.length - m.completeness) * 3 + (m.dataType === 'Foundation' || m.dataType === 'SR Legacy' ? 0 : 2);
+    i + (DB_NUTRIENTS.length - m.completeness) * 3 + (m.dataType === 'Foundation' || m.dataType === 'SR Legacy' ? 0 : 2);
   return matches
     .map((m, i) => ({ m, s: score(m, i) }))
     .sort((a, b) => a.s - b.s)
@@ -95,7 +99,7 @@ async function fetchSearch(query: string, dataTypes: string, apiKey: string): Pr
 export async function searchFoods(query: string, apiKey: string): Promise<FoodMatch[]> {
   const q = query.trim().toLowerCase();
   if (!q) return [];
-  const key = `q:${q}`;
+  const key = `q2:${q}`;
   const cached = await db.usdaCache.get(key);
   if (cached && (Date.now() - cached.fetchedAt < CACHE_MS || !navigator.onLine)) return cached.payload as FoodMatch[];
   if (!apiKey) {

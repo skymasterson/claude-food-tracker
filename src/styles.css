@@ -103,7 +103,8 @@ legend { font-weight: 700; padding: 0 6px 0 0; }
 .state-over .nbar-state { background: var(--over-bg); color: var(--over); }
 .state-over .nbar-fill { background: var(--over); }
 .state-over .nbar-text, .state-approaching .nbar-text { color: var(--text); font-weight: 600; }
-.state-under .nbar-state { background: var(--track); color: var(--muted); }
+.state-under .nbar-state, .state-incomplete .nbar-state { background: var(--track); color: var(--text); }
+.state-incomplete .nbar-text { color: var(--text); }
 .state-under .nbar-fill { background: var(--muted); }
 .nbar.compact .nbar-total { font-size: 1.05rem; }
 .nbar.compact .nbar-track { height: 8px; }
@@ -131,12 +132,12 @@ legend { font-weight: 700; padding: 0 6px 0 0; }
 .grams { flex: none; flex-direction: row; align-items: center; gap: 4px; font-size: 1rem; color: var(--text); }
 .grams input { width: 84px; font-size: 1.15rem; font-weight: 700; text-align: right; border-color: var(--primary); }
 .item-name { display: flex; flex-direction: column; min-width: 0; }
-.ncells { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.ncells { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; }
 .ncell { display: flex; flex-direction: column; align-items: center; padding: 6px 2px; border-radius: 8px; border: 1.5px solid transparent; min-width: 0; text-align: center; }
 .ncell-name { font-size: 0.7rem; color: var(--muted); font-weight: 700; }
-.ncell-val { font-weight: 700; font-variant-numeric: tabular-nums; font-size: 0.95rem; white-space: nowrap; }
+.ncell-val { font-weight: 700; font-variant-numeric: tabular-nums; font-size: 0.9rem; white-space: nowrap; }
 .ncell-name small { font-weight: 400; }
-.ncell-src { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+.ncell-src { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
 .src-usda { background: var(--usda-bg); }
 .src-user-entered { background: var(--user-bg); }
 .src-ai-estimate { background: var(--ai-bg); border: 1.5px dashed var(--approach); }

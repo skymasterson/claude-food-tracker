@@ -1,5 +1,6 @@
 import Dexie, { type Table } from 'dexie';
-import type { Draft, Entry, Favourite, Item, Recipe } from '../domain/types';
+import { migrateTargets, migrateTemplate } from '../domain/animal';
+import type { Draft, Entry, Favourite, Item, Recipe, Targets } from '../domain/types';
 
 export interface SettingRow {
   key: string;
@@ -30,6 +31,14 @@ export class FoodDB extends Dexie {
       settings: 'key',
       usdaCache: 'key, fetchedAt',
       drafts: '++id, createdAt',
+    });
+    // v2: animal protein is tracked separately. Classify existing foods and move the protein limit to animal protein.
+    this.version(2).upgrade(async (tx) => {
+      await tx.table('items').toCollection().modify((i: Item) => { migrateTemplate(i); });
+      await tx.table('favourites').toCollection().modify((f: Favourite) => { f.items.forEach(migrateTemplate); });
+      await tx.table('recipes').toCollection().modify((r: Recipe) => { r.ingredients.forEach(migrateTemplate); });
+      const row = (await tx.table('settings').get('targets')) as SettingRow | undefined;
+      if (row?.value) await tx.table('settings').put({ key: 'targets', value: migrateTargets(row.value as Partial<Targets>) });
     });
   }
 }
